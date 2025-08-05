@@ -14,23 +14,29 @@
 #### 方法B: Git Clone
 ```bash
 cd ~/Desktop
-git clone https://github.com/[ユーザー名]/video-frame-extractor.git
-cd video-frame-extractor
+git clone https://github.com/[ユーザー名]/video-snapper.git
+cd video-snapper
 ```
 
 ### ステップ2: セットアップ
 
 1. **ターミナルを開く**
    - Finderでフォルダを右クリック → 「フォルダに新規ターミナル」
-   - または、ターミナルで `cd ~/Desktop/video-frame-extractor`
+   - または、ターミナルで `cd ~/Desktop/video-snapper`
 
 2. **セットアップスクリプトを実行**（初回のみ）
    ```bash
+   chmod +x setup.sh run_app.sh  # 実行権限を付与
    ./setup.sh
    ```
 
 ### ステップ3: アプリを起動
 
+```bash
+./run_app.sh
+```
+
+または手動で：
 ```bash
 source venv/bin/activate
 python gui_app.py
@@ -40,19 +46,27 @@ python gui_app.py
 
 1. **動画フォルダを選択** - 処理したい動画が入っているフォルダを選択
 2. **出力フォルダを選択** - 画像を保存したいフォルダを選択
-3. **画像形式を選択** - JPEG または PNG（通常はJPEGで問題なし）
-4. **処理を開始** - ボタンをクリックして処理開始
+3. **保存形式を選択**
+   - **動画ごとにフォルダ分け（推奨）** - 各動画名のフォルダを作成し、`start.jpg`と`end.jpg`として保存
+   - **全てまとめて保存** - 全ての画像を1つのフォルダに`動画名_head.jpg`と`動画名_tail.jpg`として保存
+4. **画像形式を選択** - JPEG または PNG（通常はJPEGで問題なし）
+5. **処理を開始** - ボタンをクリックして処理開始
 
 ### 出力ファイル
-- `動画名_head.jpg` - 最初のフレーム
-- `動画名_tail.jpg` - 最後のフレーム
+- **フォルダ分けモード**（デフォルト）:
+  - `出力フォルダ/動画名/start.jpg` - 最初のフレーム
+  - `出力フォルダ/動画名/end.jpg` - 最後のフレーム
+- **まとめて保存モード**:
+  - `出力フォルダ/動画名_head.jpg` - 最初のフレーム
+  - `出力フォルダ/動画名_tail.jpg` - 最後のフレーム
 
 ## 🎥 対応形式
 - MP4, MOV, AVI, MKV, WMV
 
 ## 🔧 必要なもの
 - Mac（macOS Monterey以降推奨）
-- Python 3（未インストールの場合は[公式サイト](https://www.python.org/downloads/)から）
+- Python 3.9〜3.12（未インストールの場合は[公式サイト](https://www.python.org/downloads/)から）
+  - ⚠️ Python 3.13以降では一部パッケージが対応していない場合があります
 
 ## 📦 スタンドアロンアプリの作成（オプション）
 
@@ -68,7 +82,15 @@ python build_app.py
 ## ❓ トラブルシューティング
 
 ### Python3がインストールされていない
-[Python公式サイト](https://www.python.org/downloads/)からダウンロード
+[Python公式サイト](https://www.python.org/downloads/)からダウンロード（3.9〜3.12を推奨）
+
+### インストール中にエラーが発生する
+Python 3.13以降を使用している場合は、Python 3.12をインストールしてください
+
+または、シンプルセットアップを試してください：
+```bash
+./simple_setup.sh
+```
 
 ### Permission deniedエラー
 ```bash
@@ -94,6 +116,10 @@ python gui_app.py
 ## 📝 備考
 - 院内での使用を想定した設計
 - 将来的に動画の一部切り出しなど機能拡張可能
+
+## 📌 注意事項
+
+- もしセットアップ時にエラーが表示されても、最後に「セットアップが完了しました！」と表示されていれば、アプリは正常に動作する可能性があります。`./run_app.sh` で起動してみてください。
 
 ---
 

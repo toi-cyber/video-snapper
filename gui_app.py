@@ -26,21 +26,30 @@ class VideoFrameExtractorGUI:
         title_label.grid(row=0, column=0, columnspan=3, pady=20)
         
         ttk.Label(main_frame, text="1. 動画フォルダを選択:").grid(row=1, column=0, sticky=tk.W, pady=10)
-        self.input_label = ttk.Label(main_frame, text="未選択", foreground="gray")
+        self.input_label = ttk.Label(main_frame, text="未選択")
         self.input_label.grid(row=1, column=1, padx=10, sticky=tk.W)
         ttk.Button(main_frame, text="フォルダを選択", 
                   command=self.select_input_folder).grid(row=1, column=2)
         
         ttk.Label(main_frame, text="2. 出力フォルダを選択:").grid(row=2, column=0, sticky=tk.W, pady=10)
-        self.output_label = ttk.Label(main_frame, text="未選択", foreground="gray")
+        self.output_label = ttk.Label(main_frame, text="未選択")
         self.output_label.grid(row=2, column=1, padx=10, sticky=tk.W)
         ttk.Button(main_frame, text="フォルダを選択", 
                   command=self.select_output_folder).grid(row=2, column=2)
         
-        ttk.Label(main_frame, text="3. 画像形式:").grid(row=3, column=0, sticky=tk.W, pady=10)
+        ttk.Label(main_frame, text="3. 保存形式:").grid(row=3, column=0, sticky=tk.W, pady=10)
+        self.output_mode_var = tk.StringVar(value="separate")
+        output_mode_frame = ttk.Frame(main_frame)
+        output_mode_frame.grid(row=3, column=1, columnspan=2, sticky=tk.W)
+        ttk.Radiobutton(output_mode_frame, text="動画ごとにフォルダ分け（推奨）", 
+                       variable=self.output_mode_var, value="separate").pack(side=tk.LEFT, padx=5)
+        ttk.Radiobutton(output_mode_frame, text="全てまとめて保存", 
+                       variable=self.output_mode_var, value="flat").pack(side=tk.LEFT, padx=5)
+        
+        ttk.Label(main_frame, text="4. 画像形式:").grid(row=4, column=0, sticky=tk.W, pady=10)
         self.format_var = tk.StringVar(value="jpg")
         format_frame = ttk.Frame(main_frame)
-        format_frame.grid(row=3, column=1, columnspan=2, sticky=tk.W)
+        format_frame.grid(row=4, column=1, columnspan=2, sticky=tk.W)
         ttk.Radiobutton(format_frame, text="JPEG", variable=self.format_var, 
                        value="jpg").pack(side=tk.LEFT, padx=5)
         ttk.Radiobutton(format_frame, text="PNG", variable=self.format_var, 
@@ -48,16 +57,16 @@ class VideoFrameExtractorGUI:
         
         self.start_button = ttk.Button(main_frame, text="処理を開始", 
                                      command=self.start_processing, state="disabled")
-        self.start_button.grid(row=4, column=0, columnspan=3, pady=30)
+        self.start_button.grid(row=5, column=0, columnspan=3, pady=30)
         
         self.progress = ttk.Progressbar(main_frame, mode='determinate')
-        self.progress.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=10)
+        self.progress.grid(row=6, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=10)
         
         self.status_label = ttk.Label(main_frame, text="フォルダを選択してください")
-        self.status_label.grid(row=6, column=0, columnspan=3, pady=5)
+        self.status_label.grid(row=7, column=0, columnspan=3, pady=5)
         
         result_frame = ttk.Frame(main_frame)
-        result_frame.grid(row=7, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=10)
+        result_frame.grid(row=8, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=10)
         
         scrollbar = ttk.Scrollbar(result_frame)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -70,20 +79,20 @@ class VideoFrameExtractorGUI:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(7, weight=1)
+        main_frame.rowconfigure(8, weight=1)
         
     def select_input_folder(self):
         folder = filedialog.askdirectory(title="動画が入っているフォルダを選択")
         if folder:
             self.input_folder = Path(folder)
-            self.input_label.config(text=folder, foreground="black")
+            self.input_label.config(text=folder)
             self.check_ready()
             
     def select_output_folder(self):
         folder = filedialog.askdirectory(title="画像を保存するフォルダを選択")
         if folder:
             self.output_folder = Path(folder)
-            self.output_label.config(text=folder, foreground="black")
+            self.output_label.config(text=folder)
             self.check_ready()
             
     def check_ready(self):
@@ -112,6 +121,7 @@ class VideoFrameExtractorGUI:
                 self.input_folder,
                 self.output_folder,
                 self.format_var.get(),
+                self.output_mode_var.get(),
                 lambda c, t, f: self.root.after(0, self.update_progress, c, t, f)
             )
             

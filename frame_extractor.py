@@ -11,7 +11,7 @@ class VideoFrameExtractor:
     def is_video_file(self, file_path: Path) -> bool:
         return file_path.suffix.lower() in self.supported_formats
     
-    def extract_frames(self, video_path: Path, output_dir: Path, image_format: str = 'jpg') -> Tuple[bool, str]:
+    def extract_frames(self, video_path: Path, output_dir: Path, image_format: str = 'jpg', output_mode: str = 'separate') -> Tuple[bool, str]:
         try:
             cap = cv2.VideoCapture(str(video_path))
             
@@ -29,7 +29,16 @@ class VideoFrameExtractor:
                 return False, f"最初のフレームを読み込めませんでした: {video_path.name}"
             
             base_name = video_path.stem
-            head_filename = output_dir / f"{base_name}_head.{image_format}"
+            
+            if output_mode == 'separate':
+                video_output_dir = output_dir / base_name
+                video_output_dir.mkdir(exist_ok=True)
+                head_filename = video_output_dir / f"start.{image_format}"
+                tail_filename = video_output_dir / f"end.{image_format}"
+            else:
+                head_filename = output_dir / f"{base_name}_head.{image_format}"
+                tail_filename = output_dir / f"{base_name}_tail.{image_format}"
+            
             cv2.imwrite(str(head_filename), first_frame)
             
             cap.set(cv2.CAP_PROP_POS_FRAMES, total_frames - 1)
@@ -40,7 +49,6 @@ class VideoFrameExtractor:
                 ret, last_frame = cap.read()
             
             if ret:
-                tail_filename = output_dir / f"{base_name}_tail.{image_format}"
                 cv2.imwrite(str(tail_filename), last_frame)
             else:
                 cap.release()
@@ -53,7 +61,8 @@ class VideoFrameExtractor:
             return False, f"エラーが発生しました ({video_path.name}): {str(e)}"
     
     def process_folder(self, input_folder: Path, output_folder: Path, 
-                      image_format: str = 'jpg', progress_callback=None) -> List[Tuple[str, bool, str]]:
+                      image_format: str = 'jpg', output_mode: str = 'separate', 
+                      progress_callback=None) -> List[Tuple[str, bool, str]]:
         results = []
         video_files = []
         
@@ -64,7 +73,7 @@ class VideoFrameExtractor:
         total_files = len(video_files)
         
         for idx, video_file in enumerate(video_files):
-            success, message = self.extract_frames(video_file, output_folder, image_format)
+            success, message = self.extract_frames(video_file, output_folder, image_format, output_mode)
             results.append((video_file.name, success, message))
             
             if progress_callback:

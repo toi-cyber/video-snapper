@@ -11,12 +11,7 @@
 2. 「**Download ZIP**」をクリック
 3. ダウンロードしたZIPファイルをデスクトップで解凍
 
-#### 方法B: Git Clone
-```bash
-cd ~/Desktop
-git clone https://github.com/[ユーザー名]/video-snapper.git
-cd video-snapper
-```
+
 
 ### ステップ2: セットアップ
 
